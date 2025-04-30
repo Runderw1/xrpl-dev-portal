@@ -9,67 +9,114 @@ labels:
 
 _(Requires the [MPTokensV1 amendment][] {% not-enabled /%})_
 
-For a given `MPTokenIssuanceID` and ledger sequence, `mpt_holders` returns all holders of that MPT and their balance. This method likely returns very large data sets, so you should expect to implement paging via the `marker` field. This API is only available using Clio, not rippled.
+For a given `MPTokenIssuanceID` and ledger sequence, `mpt_holders` returns all holders of that MPT and their balance. This method likely returns very large data sets, so you should expect to implement paging via the `marker` field. This API is only available using Clio, not `rippled`. {% badge href="https://github.com/XRPLF/clio/releases/tag/2.3.0" %}New in: Clio v2.3.0{% /badge %}
 
 ## Request Format
 
-*Websocket*
+{% tabs %}
 
+{% tab label="WebSocket" %}
 ```json
 {
   "command": "mpt_holders",
-  "mpt_issuance_id": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
+  "mpt_issuance_id": "0024D204E07DDDFBCD83B1649C07FE27FD536A3A32E6FDD8",
   "ledger_index": "validated"
 }
 ```
+{% /tab %}
 
-*JSON-RPC*
-
+{% tab label="JSON-RPC" %}
 ```json
 {
   "method": "mpt_holders",
   "params": [
     {
-      "mpt_issuance_id": "00070C4495F14B0E44F78A264E41713C64B5F89242540EE255534400000000000000",
+      "mpt_issuance_id": "0024D204E07DDDFBCD83B1649C07FE27FD536A3A32E6FDD8",
       "ledger_index": "validated"
     }
   ]
 }
 ```
+{% /tab %}
 
+{% /tabs %}
+
+{% try-it method="mpt_holders" /%}
 
 The request contains the following parameters:
 
 | Field             | Type                 | Required? | Description |
 |:------------------|:---------------------|:----------|-------------|
-| `mpt_issuance_id` | string               | Yes       | The `MPTokenIssuance` to query. |
-| `ledger_index`    | string or number (positive integer) | No | The ledger index of the max ledger to use, ora shortcut string to choose a ledger automatically. You must specify either ledger_index or ledger_hash. |
-| `ledger_hash`     | string               | No        | A 32-byte hex string for the ledger version to use. You must specify either ledger_index or ledger_hash. |
-| `marker`          | string               | No        | Used to continue your query where it left off in paginating. |
-| `limit`           | number (positive integer) | No   | Specify a limit to the number of MPTs returned. |
+| `mpt_issuance_id` | String               | Yes       | The `MPTokenIssuance` to query. |
+| `ledger_index`    | String or Number (positive integer) | No | The [Ledger Index][] of the max ledger to use, ora shortcut string to choose a ledger automatically. You must specify either ledger_index or ledger_hash. (See [Specifying Ledgers][]) |
+| `ledger_hash`     | String               | No        | A 32-byte hex string for the ledger version to use. You must specify either ledger_index or ledger_hash. (See [Specifying Ledgers][]) |
+| `marker`          | [Marker][]           | No        | Used to continue your query where it left off in paginating. |
+| `limit`           | Number (positive integer) | No   | Specify a limit to the number of MPTs returned. |
 
 ## Response Format
 
+{% tabs %}
+{% tab label="WebSocket" %}
 ```json
 {
-    "mpt_issuance_id": "000004C463C52827307480341125DA0577DEFC38405B0E3E",
-    "limit":50,
-    "ledger_index": 2,
-    "mptokens": [{
-        "account": "rEiNkzogdHEzUxPfsri5XSMqtXUixf2Yx",
+  "result": {
+    "mpt_issuance_id": "0024D204E07DDDFBCD83B1649C07FE27FD536A3A32E6FDD8",
+    "limit": 50,
+    "ledger_index": 2414929,
+    "mptokens": [
+      {
+        "account": "rfyWeQpYM3vCXRHA9cMLs2ZEdZv1F1jzm9",
         "flags": 0,
-        "mpt_amount": "20",
-        "mptoken_index": "36D91DEE5EFE4A93119A8B84C944A528F2B444329F3846E49FE921040DE17E65"
-    },
-    {
-        "account": "rrnAZCqMahreZrKMcZU3t2DZ6yUndT4ubN",
-        "flags": 0,
-        "mpt_amount": "1",
-        "mptoken_index": "D137F2E5A5767A06CB7A8F060ADE442A30CFF95028E1AF4B8767E3A56877205A"
-    }],
+        "mpt_amount": "200",
+        "mptoken_index": "22F99DCD55BCCF3D68DC3E4D6CF12602006A7563A6BE93FC57FD63298BCCEB13"
+      }
+    ],
     "validated": true
+  },
+  "id": "example_mpt_holders",
+  "status": "success",
+  "type": "response",
+  "warnings": [
+    {
+      "id": 2001,
+      "message": "This is a clio server. clio only serves validated data. If you want to talk to rippled, include 'ledger_index':'current' in your request"
+    }
+  ]
 }
 ```
+{% /tab %}
+
+{% tab label="JSON-RPC" %}
+```json
+200 OK
+
+{
+  "result": {
+    "mpt_issuance_id": "0024D204E07DDDFBCD83B1649C07FE27FD536A3A32E6FDD8",
+    "limit": 50,
+    "ledger_index": 2415033,
+    "mptokens": [
+      {
+        "account": "rfyWeQpYM3vCXRHA9cMLs2ZEdZv1F1jzm9",
+        "flags": 0,
+        "mpt_amount": "200",
+        "mptoken_index": "22F99DCD55BCCF3D68DC3E4D6CF12602006A7563A6BE93FC57FD63298BCCEB13"
+      }
+    ],
+    "validated": true,
+    "status": "success"
+  },
+  "warnings": [
+    {
+      "id": 2001,
+      "message": "This is a clio server. clio only serves validated data. If you want to talk to rippled, include 'ledger_index':'current' in your request"
+    }
+  ]
+}
+```
+{% /tab %}
+
+{% /tabs %}
 
 ### Response Fields
 
@@ -77,20 +124,20 @@ The response follows the [standard format][], with the result containing the fol
 
 | Field                  | Type    | Description                               |
 |:-----------------------|:--------|:------------------------------------------|
-| `mpt_issuance_id`      | string  | The `MPTokenIssuance` queried             |
-| `mptokens`             | array   | An array of mptokens. Includes all relevant fields in the underlying MPToken object. |
-| `marker`               | string  | Used to continue querying where we left off when paginating. Omitted if there are no more entries after this result. |
-| `limit`                | number  | The limit, as specfied in the request
-| `ledger_index`         | number  | The index of the ledger used. |
+| `mpt_issuance_id`      | String  | The `MPTokenIssuance` queried             |
+| `mptokens`             | Array   | An array of mptokens. Includes all relevant fields in the underlying `MPToken` object. |
+| `marker`               | String  | Used to continue querying where we left off when paginating. Omitted if there are no more entries after this result. |
+| `limit`                | Number  | The limit, as specfied in the request
+| `ledger_index`         | Number  | The index of the ledger used. |
 
-An `mptoken` object has the following parameters:
+An `MPToken` object has the following parameters:
 
 | Field                  | Type    | Description |
 |:-----------------------|:--------|:------------------------------------------|
-| `account`              | string  | The account address of the holder who owns the `MPToken`. |
-| `flags`                | number  | The flags assigned to the`MPToken` object. |
-| `mpt_amount`           | string  | Base 10-encoded amount of the holder's balance. |
-| `mptoken_index`        | string  | Key of the `MPToken` object. |
+| `account`              | String  | The account address of the holder who owns the `MPToken`. |
+| `flags`                | Number  | The flags assigned to the`MPToken` object. |
+| `mpt_amount`           | String  | Base 10-encoded amount of the holder's balance. |
+| `mptoken_index`        | String  | Key of the `MPToken` object. |
 
 ##### Example
 Example of a `tx` response:
